@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+
+{% block header_title %}
+    Nova Transação
+{% endblock %}
+
+{% block content %}
+    {% load l10n %}
+    <div class="max-w-2xl mx-auto">
+        <!-- Form Card -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/60 p-6">
+            <!-- Card Header -->
+            <div class="p-6 pb-6">
+                <div class="flex items-center gap-3 text-xl font-semibold text-gray-900 mb-2">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <i data-lucide="plus" class="h-5 w-5 text-blue-600"></i>
+                    </div>
+                    Detalhes da Transação
+                </div>
+                <p class="text-base text-gray-600">Preencha as informações da sua transação financeira</p>
+            </div>
+            <!-- Card Content -->
+            <div class="px-6 pb-6">
+                <form id="transactionForm" method="post" class="space-y-8" action="add_new_transaction">
+                    {% csrf_token %}
+                    <!-- Tipo de Transação -->
+                    <div class="space-y-3">
+                        <label for="type" class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                            Tipo de Transação <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <select id="type" name="type" required
+                                class="w-full h-12 px-4 border-2 border-gray-200 rounded-md bg-white text-gray-900 hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 shadow-sm hover:shadow-md custom-select appearance-none">
+                                <option value="">Selecione se é entrada ou saída</option>
+                                <option value="income">💹 Entrada - Valores que você recebeu</option>
+                                <option value="expense">📉 Saída - Valores que você gastou</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <label for="amount" class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                            Valor da Transação <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input id="amount" name="amount_cents" type="text" inputmode="numeric" pattern="[0-9]*"
+                                step="0.01" placeholder="R$ 0,00" autocomplete="off"
+                                class="w-full h-12 pl-4 pr-4 text-lg font-medium border-2 border-gray-200 rounded-md hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-colors"
+                                required />
+                            <input id="currency_cents" type="hidden" name="amount" value="0" />
+                        </div>
+                        <p class="text-xs text-gray-500">Digite apenas números. Ex: 150.50</p>
+                        {% if form.amount.errors %}
+                            <p class="text-red-600 text-sm mt-1">{{ form.amount.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-3">
+                        <label for="paymentMethod" class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                            Método de Pagamento <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <select id="transaction_method" name="transaction_method" required
+                                class="w-full h-12 px-4 border-2 border-gray-200 rounded-md bg-white text-gray-900 hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200 shadow-sm hover:shadow-md custom-select appearance-none">
+                                <option value="">Como foi feita a transação?</option>
+                                <option value="1">💵 Dinheiro - Pagamento em espécie</option>
+                                <option value="2">💳 PIX - Transferência instantânea</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <label for="description" class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                            Descrição <span class="text-red-500">*</span>
+                        </label>
+                        <textarea id="description" maxlength="100" name="description"
+                            placeholder="Descreva a transação (ex: Pagamento de aluguel, Freelance, Compra no mercado...)"
+                            class="w-full min-h-[120px] p-4 border-2 border-gray-200 rounded-md hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-colors resize-none"
+                            required></textarea>
+                        <p class="text-xs text-gray-500">Seja específico para facilitar o controle das suas finanças</p>
+                    </div>
+                    <div class="flex gap-4 pt-6">
+                        <button type="button" id="cancelBtn"
+                            class="flex-1 w-full h-16 sm:h-12 px-4 border-2 border-emerald-200 rounded-md bg-transparent hover:bg-emerald-50 hover:border-emerald-400 transition-all duration-200 font-medium text-emerald-700">
+                            Cancelar
+                        </button>
+                        <button type="button" id="saveBtn"
+                            class="flex-1 h-16 sm:h-12 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-md shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            disabled>
+                            <i data-lucide="plus" class="h-4 w-4"></i> Salvar Transação
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmationModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300">
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-100 rounded-full">
+                        <i data-lucide="check-circle" class="h-5 w-5 text-blue-600"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900">Confirmar Transação</h3>
+                </div>
+            </div>
+            <!-- Modal Content -->
+            <div class="p-6">
+                <p class="text-gray-600 mb-4">Verifique os dados da sua transação antes de salvar:</p>
+                <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-medium text-gray-600">Tipo:</span>
+                        <span id="confirmType" class="font-semibold text-gray-900"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-medium text-gray-600">Valor:</span>
+                        <span id="confirmValue" class="font-bold text-lg"></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-medium text-gray-600">Método:</span>
+                        <span id="confirmMethod" class="font-semibold text-gray-900"></span>
+                    </div>
+                    <div class="pt-2 border-t border-gray-200">
+                        <span class="text-sm font-medium text-gray-600">Descrição:</span>
+                        <p id="confirmDescription" class="text-gray-900 mt-1 break-words whitespace-normal leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="p-6 border-t border-gray-200 flex gap-3">
+                <button id="cancelConfirmation"
+                    class="flex-1 h-10 px-4 border-2 border-gray-300 rounded-md bg-transparent hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium text-gray-700">
+                    Cancelar
+                </button>
+                <button id="confirmSave"
+                    class="flex-1 h-10 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2">
+                    <i data-lucide="check" class="h-4 w-4"></i> Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-2xl max-w-sm w-full mx-4 transform transition-all duration-300">
+            <!-- Success Icon and Message -->
+            <div class="p-8 text-center">
+                <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                    <i data-lucide="check-circle" class="h-8 w-8 text-green-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Transação Salva!</h3>
+                <p class="text-gray-600 mb-6">Sua transação foi adicionada com sucesso ao seu controle financeiro.</p>
+                <button id="closeSuccessModal"
+                    class="w-full h-10 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md shadow-lg hover:shadow-xl transition-all duration-200">
+                    Continuar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Failed Message Modal -->
+    <div id="failedModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-lg shadow-2xl max-w-sm w-full mx-4 transform transition-all duration-300">
+            <!-- Failed Icon and Message -->
+            <div class="p-8 text-center">
+                <div class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                    <i data-lucide="x-circle" class="h-8 w-8 text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Erro na Transação</h3>
+                <p id="failedMessage" class="text-gray-600 mb-6">Verifique os dados inseridos e tente novamente.</p>
+                <button id="closeFailedModal"
+                    class="w-full h-10 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-md shadow-lg hover:shadow-xl transition-all duration-200">
+                    Tentar Novamente
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    lucide.createIcons()
+    const form = document.getElementById('transactionForm')
+    const saveBtn = document.getElementById('saveBtn')
+    const typeSelect = document.getElementById('type')
+    const amountInput = document.getElementById('amount')
+    const methodSelect = document.getElementById('transaction_method')
+    const descriptionTextArea = document.getElementById('description')
+    const hidden = document.getElementById('currency_cents')
+    var type
+    var value
+    var method
+    var description
+
+    function updateBtnSubmit() {
+        type = typeSelect.value
+        value = amountInput.value
+        method = methodSelect.value
+        description = descriptionTextArea.value
+        // Update submit button state
+        const isValid = type && value && method && description
+        saveBtn.disabled = !isValid
+    }
+
+    // Add event listeners
+    typeSelect.addEventListener('change', updateBtnSubmit)
+    amountInput.addEventListener('input', updateBtnSubmit)
+    methodSelect.addEventListener('change', updateBtnSubmit)
+    descriptionTextArea.addEventListener('input', updateBtnSubmit)
+
+    // Mask to currency value
+    let cents = null
+
+    function formatBRL(c) {
+        return (c / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    }
+
+    function render() {
+        if (cents === null || cents === 0) {
+            amountInput.value = ''
+            hidden.value = ''
+        } else {
+            amountInput.value = formatBRL(cents)
+            hidden.value = (cents / 100).toFixed(2)
+        }
+        requestAnimationFrame(() => {
+            const len = amountInput.value.length
+            amountInput.setSelectionRange(len, len)
+        })
+    }
+
+    function addDigit(d) {
+        if (cents === null) cents = 0
+        if (String(cents).length >= 15) return
+        cents = cents * 10 + d
+        render()
+    }
+
+    function backspace() {
+        if (cents === null) return
+        cents = Math.floor(cents / 10)
+        if (cents === 0) { cents = null }
+        render()
+    }
+
+    // evento principal para capturar digitação em todos os dispositivos
+    amountInput.addEventListener('beforeinput', (e) => {
+        const inputType = e.inputType
+        const data = e.data
+        if (inputType === 'deleteContentBackward') {
+            e.preventDefault()
+            backspace()
+            return
+        }
+        // verifica se o caractere é número
+        if (data && /^\d$/.test(data)) {
+            e.preventDefault()
+            addDigit(Number(data))
+            return
+        }
+        // ignora tudo que não for número nem backspace
+        e.preventDefault()
+    })
+
+    amountInput.addEventListener('click', () => {
+        const len = amountInput.value.length
+        amountInput.setSelectionRange(len, len)
+    })
+
+    amountInput.addEventListener('focus', () => {
+        const len = amountInput.value.length
+        amountInput.setSelectionRange(len, len)
+    })
+
+    amountInput.addEventListener('paste', (e) => {
+        e.preventDefault()
+        const text = (e.clipboardData || window.clipboardData).getData('text') || ''
+        const digits = text.replace(/\D+/g, '')
+        if (!digits) return
+        for (const ch of digits) addDigit(Number(ch))
+    })
+
+    render()
+
+    saveBtn.addEventListener('click', function (e) {
+        console.log(transaction_method.value)
+        if(type === "expense"){
+            if(transaction_method.value == 1){
+                if (parseFloat(hidden.value) > {{total_cash|unlocalize}}) {
+                    showFailedModal('O valor desejado ultrapassa o valor disponível em dinheiro')
+                    return
+                }
+            }else {
+                if (parseFloat(hidden.value) > {{total_pix|unlocalize}}){
+                    showFailedModal('O valor desejado ultrapassa o valor disponível em pix')
+                    return
+                }
+            }
+        }
+        const formData = { type, value: amountInput.value, amount: hidden.value, transaction_method: method, description }
+        showConfirmationModal(formData)
+    })
+
+    function showConfirmationModal(formData) {
+        const modal = document.getElementById('confirmationModal')
+        const confirmType = document.getElementById('confirmType')
+        const confirmValue = document.getElementById('confirmValue')
+        const confirmMethod = document.getElementById('confirmMethod')
+        const confirmDescription = document.getElementById('confirmDescription')
+        // Populate modal with form data
+        confirmType.textContent = formData.type === 'income' ? 'Entrada' : 'Saída'
+        if (type === 'income') {
+            confirmValue.textContent = formData.value
+            confirmValue.className = 'font-bold text-lg text-green-600'
+        } else {
+            confirmValue.textContent = `-${formData.value}`
+            confirmValue.className = 'font-bold text-lg text-red-600'
+        }
+        confirmMethod.textContent = formData.transaction_method === '1' ? 'Dinheiro' : 'Pix'
+        confirmDescription.textContent = formData.description
+        // Show modal
+        modal.classList.remove('hidden')
+        modal.dataset.formData = JSON.stringify(formData)
+    }
+
+    async function saveTransaction() {
+        const modal = document.getElementById('confirmationModal')
+        const formData = JSON.parse(modal.dataset.formData)
+        try {
+            const response = await fetch("{% url 'add_new_transaction' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(formData)
+            })
+            const result = await response.json()
+            hideConfirmationModal()
+            if (result.sucess) {
+                showSuccessModal()
+            } else {
+                const errors = []
+                for (const key in result.errors) {
+                    if (result.errors.hasOwnProperty(key)) {
+                        console.log(`Chave de erro: ${key}`)
+                        console.log(`Mensagem de erro: ${result.errors[key][0]}`)
+                        errors.push(result.errors[key][0])
+                    }
+                    showFailedModal(errors)
+                }
+            }
+        } catch (errors) {
+            hideConfirmationModal()
+        }
+        form.reset()
+        cents = null
+    }
+
+    document.getElementById('cancelConfirmation').addEventListener('click', hideConfirmationModal)
+    document.getElementById('confirmSave').addEventListener('click', saveTransaction)
+
+    // Success modal functions
+    function showSuccessModal() {
+        const modal = document.getElementById('successModal')
+        modal.classList.remove('hidden')
+        lucide.createIcons()
+    }
+
+    function hideSuccessModal() {
+        const modal = document.getElementById('successModal')
+        modal.classList.add('hidden')
+    }
+
+    function hideConfirmationModal() {
+        const modal = document.getElementById('confirmationModal')
+        modal.classList.add('hidden')
+    }
+
+    // Failed modal functions
+    function showFailedModal(message) {
+        console.log('shjdd')
+        const modal = document.getElementById('failedModal')
+        const failedMessage = document.getElementById('failedMessage')
+        failedMessage.textContent = message
+        modal.classList.remove('hidden')
+    }
+
+    function hideFailedModal() {
+        const modal = document.getElementById('failedModal')
+        modal.classList.add('hidden')
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('confirmationModal').addEventListener('click', function (e) {
+        if (e.target === this) { hideConfirmationModal() }
+    })
+    document.getElementById('successModal').addEventListener('click', function (e) {
+        if (e.target === this) { hideSuccessModal() }
+    })
+    document.getElementById('closeSuccessModal').addEventListener('click', hideSuccessModal)
+    document.getElementById('failedModal').addEventListener('click', function (e) {
+        if (e.target === this) { hideFailedModal() }
+    })
+    document.getElementById('closeFailedModal').addEventListener('click', hideFailedModal)
+})
+
+document.getElementById('cancelBtn').addEventListener('click', function() {
+    window.location.href = "{% url 'dashboard' %}";
+});
+</script>
+{% endblock %}

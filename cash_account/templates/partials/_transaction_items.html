@@ -1,0 +1,77 @@
+{% for date, transactions in grouped_transactions.items %}
+  <div class="">
+    <h2 class="bg-gray-100 py-2 text-center text-sm font-semibold text-gray-500">{{ date }}</h2>
+
+    <ul role="list" class="divide-y divide-gray-100">
+      {% for transaction in transactions %}
+        <a href="{% url 'details' transaction.id %}">
+          <li class="flex justify-between gap-x-6 py-5 px-4 cursor-pointer hover:bg-gray-50 t-item">
+            <div class="flex items-center gap-x-4">
+              <div class="p-2 rounded-full {% if transaction.type == 'income' %}
+                  
+                  bg-green-100 text-green-600
+
+                {% else %}
+                  
+                  bg-red-100 text-red-600
+
+                {% endif %}">
+                {% if transaction.type == 'income' %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right h-4 w-4">
+                    <path d="M7 7h10v10"></path>
+                    <path d="M7 17 17 7"></path>
+                  </svg>
+                {% else %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-right h-4 w-4">
+                    <path d="m7 7 10 10"></path>
+                    <path d="M17 7v10H7"></path>
+                  </svg>
+                {% endif %}
+              </div>
+              <div class="min-w-0 flex-auto">
+                <p class="text-sm font-semibold leading-6 text-gray-900">{{ transaction.get_type_display }}</p>
+                <p class="mt-1 break-words text-sm leading-5 text-gray-500">{{ transaction.description }}</p>
+              </div>
+            </div>
+            <div class="shrink-0 sm:flex sm:flex-col sm:items-end">
+              <p class="text-sm leading-6 {% if transaction.type == 'income' %}
+                  
+                  text-green-500
+
+                {% else %}
+                  
+                  text-red-500
+
+                {% endif %}">
+                {% if transaction.type == 'expense' %}-{% endif %}R$ {{ transaction.amount }}
+              </p>
+              <p class="mt-1 text-xs leading-5 text-gray-500 text-right">{{ transaction.transaction_date|time:'H:i' }}</p>
+            </div>
+          </li>
+        </a>
+      {% endfor %}
+    </ul>
+  </div>
+{% empty %}
+  <div id="empty-state" class="p-12 text-center">
+    <div class="text-gray-400 mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-receipt h-16 w-16 mx-auto mb-4">
+        <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path>
+        <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path>
+        <path d="M12 17.5v-11"></path>
+      </svg>
+    </div>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">Nenhuma transação encontrada</h3>
+    <p class="text-gray-500 mb-6 max-w-md mx-auto">Você ainda não possui transações registradas ou nenhuma transação corresponde aos filtros aplicados.</p>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <div class="relative group inline-block">
+        <a href="{% url 'transaction_page' %}" class="px-4 py-2.5 rounded-xl flex items-center transition-all duration-200 text-sm font-semibold bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30 hover:from-emerald-600 hover:to-teal-700 hover:shadow-xl hover:shadow-emerald-500/40">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 mr-2">
+            <path d="M5 12h14"></path>
+            <path d="M12 5v14"></path>
+          </svg>Adicionar Nova Transação
+        </a>
+      </div>
+    </div>
+  </div>
+{% endfor %}

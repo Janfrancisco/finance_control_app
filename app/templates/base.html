@@ -1,0 +1,44 @@
+<!-- templates/base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        FinanceConntrol
+      {% endblock %}
+    </title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+  </head>
+  <body class="bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+    <div class="flex h-screen">
+      {% include 'partials/sidebar.html' %}
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-white border-b border-gray-200 shadow-sm">
+          <div class="flex items-center h-16 px-4 lg:px-6">
+            <button onclick="toggleSidebar()" class="lg:hidden mr-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"><i data-lucide="menu" id="menu-icon" class="h-5 w-5"></i></button>
+            <h1 class="text-xl font-bold text-gray-900 ml-12 lg:ml-0">
+              {% block header_title %}
+
+              {% endblock %}
+            </h1>
+          </div>
+        </header>
+          <script>
+          lucide.createIcons()
+        </script>
+        <div id="overlay" class="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40 hidden" onclick="toggleSidebar()"></div>
+        <main class="flex-1 overflow-y-auto sm:p-3 p-0">
+          {% block content %}
+          {% endblock %}
+        </main>
+      </div>
+    </div>
+    <div id="modal-container"></div>
+    <script src="{% static 'js/base.js' %}"></script>
+    {% block script %}{% endblock script %}
+  </body>
+</html>

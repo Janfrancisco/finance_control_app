@@ -1,0 +1,109 @@
+.notification-container {
+    position: fixed;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 280px;
+    margin: 16px;
+  }
+  
+  .notification-container[data-position^='top-'] {
+    top: 40%;
+  }
+  
+  .notification-container[data-position^='bottom-'] {
+    bottom: 0;
+  }
+  
+  .notification-container[data-position$='-right'] {
+    right: 0;
+  }
+  
+  .notification-container[data-position$='-left'] {
+    left: 0;
+  }
+  
+  .notification-container[data-position$='-center'] {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .notification {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    position: relative;
+    background: #262f2c;
+    color: #757575;
+    padding: 42px 24px;
+    border-radius: 0;
+    font-size: 14px;
+    font-family: sans-serif;
+    cursor: pointer;
+    overflow: hidden;
+    /* animation: fadein 300ms; */
+    transition: transform 380ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  /* @keyframes fadein {
+    0%{
+      opacity: 0;
+    }
+    100%{
+      opacity: 1;
+    }
+  } */
+
+  .notification-container[data-position$='-right'] .notification {
+    transform: translateX(110%);
+  }
+  
+  .notification-container[data-position$='-left'] .notification {
+    transform: translateX(-110%);
+  }
+  
+  .notification-container[data-position='top-center'] .notification {
+    transform: translateY(-100vh);
+  }
+  
+  .notification-container[data-position='bottom-center'] .notification {
+    transform: translateY(100vh);
+  }
+  /* Initial position from toast */
+  .notification-container .notification.show {
+    transform: translate(-50%, 0);
+  }
+  
+  .notification.progress::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: calc(100% * var(--progress));
+    height: 5px;
+    background: rgb(255, 0, 99);
+    background: #f12c4c
+  }
+  
+  .notification.can-close::after {
+    content: '\00D7';
+    position: absolute;
+    top: 0;
+    right: 8px;
+    font-size: 22px;
+  }
+
+  /* For smaller mobile */
+  @media only screen and (max-width: 600px) {
+
+    .notification-container[data-position^='top-'] {
+      top: 80%;
+    }
+    .notification-container .notification.show {
+      transform: translate(-15%, 0);
+    }
+
+  }
+  

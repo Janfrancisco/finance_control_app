@@ -1,0 +1,13 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        ENVIRONMENT: "dev"
+    container_name: financial_app
+
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/financial
+  

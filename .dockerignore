@@ -1,0 +1,12 @@
+.venv
+.git
+.gitignore
+venv
+__pycache__
+screenshots
+/screenshots
+screenshots/
+screenshots/*
+LICENSE
+package.json
+package-lock.json

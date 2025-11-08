@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+
+{% block header_title %}
+  Configurações do Perfil
+{% endblock %}
+
+{% block content %}
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+  <section class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-2xl mx-auto space-y-6">
+
+      <!-- Profile picture -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/60 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6 text-center md:text-left">
+          Foto do Perfil
+        </h3>
+
+        <form method="POST" enctype="multipart/form-data" class="flex items-center space-x-6">
+          {% csrf_token %}
+          <div class="relative">
+            <div
+              class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-white shadow-lg bg-emerald-600 flex items-center justify-center"
+            >
+              <!-- Avatar image -->
+              <img
+                id="avatarPreview"
+                class="w-full h-full object-cover"
+                src="{% if user.avatar %}{{ user.avatar.url }}{% else %}{% endif %}"
+                {% if user.avatar %}alt="Foto do perfil"{% endif %}
+              >
+
+              <!-- Fallback: Overlapping initials -->
+              {% if not user.avatar %}
+                <span class="absolute text-white text-4xl font-medium" id="initialsAvatar">
+                  {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+                </span>
+              {% endif %}
+            </div>
+
+            <label
+              for="avatarInput"
+              class="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-md border border-gray-200 hover:bg-gray-50 cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-camera h-4 w-4 text-gray-600"
+              >
+                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                <circle cx="12" cy="13" r="3" />
+              </svg>
+            </label>
+
+            {{ user_form.avatar }}
+          </div>
+
+          <div>
+            <h4 class="text-sm font-medium text-gray-900 mb-2">Alterar foto</h4>
+            <p class="text-sm text-gray-500 mb-4">
+              Clique no ícone da câmera para alterar sua foto de perfil.
+            </p>
+            <button
+              type="submit"
+              name="updateAvatar"
+              id="savePhoto"
+              class="px-4 py-2 bg-emerald-600 text-white rounded-md shadow hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              disabled
+            >
+              Salvar Foto
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Personal Information -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/60 p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-semibold text-gray-900">Informações Pessoais</h3>
+          <span class="text-sm text-center text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+            Somente leitura
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- First name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Primeiro Nome</label>
+            <div class="relative">
+              <svg
+                class="lucide lucide-user absolute left-3 top-3 h-4 w-4 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"
+              >
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input
+                readonly
+                class="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+                type="text"
+                value="{{ user.first_name }}"
+              />
+            </div>
+          </div>
+
+          <!-- Last name -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Último Nome</label>
+            <div class="relative">
+              <svg
+                class="lucide lucide-user absolute left-3 top-3 h-4 w-4 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"
+              >
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <input
+                readonly
+                class="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+                type="text"
+                value="{{ user.last_name }}"
+              />
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <div class="relative">
+              <svg
+                class="lucide lucide-mail absolute left-3 top-3 h-4 w-4 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"
+              >
+                <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+              <input
+                readonly
+                class="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+                type="email"
+                value="{{ user.email }}"
+              />
+            </div>
+          </div>
+
+          <!-- Member since -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Membro desde</label>
+            <div class="relative">
+              <svg
+                class="lucide lucide-calendar absolute left-3 top-3 h-4 w-4 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"
+              >
+                <path d="M8 2v4"></path>
+                <path d="M16 2v4"></path>
+                <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                <path d="M3 10h18"></path>
+              </svg>
+              <input
+                readonly
+                class="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+                type="text"
+                value="{{ user.date_joined|date:'d/m/Y' }}"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p class="text-sm text-blue-800">
+            <svg
+              class="lucide lucide-shield inline h-4 w-4 mr-1"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24" height="24" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"
+            >
+              <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
+            </svg>
+            Para alterar essas informações, entre em contato com o suporte.
+          </p>
+        </div>
+      </div>
+
+      <!-- Change password -->
+      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/60 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-6">Alterar Senha</h3>
+
+        <form method="post" class="space-y-4">
+          {% csrf_token %}
+          {% for field in change_password_form %}
+            <div>
+              <label
+                class="block text-sm font-medium text-gray-700 mb-2"
+                for="{{ field.id_for_label }}"
+              >
+                {{ field.label }}
+              </label>
+              <div class="relative">
+                <svg
+                  class="lucide lucide-lock absolute left-3 top-3 h-4 w-4 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24" height="24" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"
+                >
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                {{ field }}
+              </div>
+              {% if field.errors %}
+                <p class="text-red-600 text-sm mt-1">{{ field.errors.0 }}</p>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <div class="flex flex-col sm:flex-row gap-3 pt-4">
+            <a
+              href="{% url 'dashboard' %}"
+              class="flex-1 px-4 py-2 border-2 border-emerald-200 rounded-lg text-emerald-700 hover:bg-emerald-50 transition-colors text-center hover:border-emerald-400"
+            >
+              Voltar
+            </a>
+            <button
+              type="submit"
+              name="updatePassword"
+              class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center"
+            >
+              <svg
+                class="lucide lucide-save h-4 w-4 mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24" height="24" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round"
+              >
+                <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
+                <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"></path>
+                <path d="M7 3v4a1 1 0 0 0 1 1h7"></path>
+              </svg>
+              Alterar Senha
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const scrollContainer = document.querySelector('.overflow-y-auto');
+      if (scrollContainer) scrollContainer.scrollTop = 0;
+
+      const input = document.getElementById('avatarInput');
+      const btnSavePhoto = document.getElementById('savePhoto');
+      const preview = document.getElementById('avatarPreview');
+      const initialsAvatar = document.getElementById('initialsAvatar');
+
+      input.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = e => {
+            preview.src = e.target.result;
+            initialsAvatar.style.display = 'none';
+          };
+          reader.readAsDataURL(file);
+        }
+        btnSavePhoto.disabled = false;
+      });
+
+      function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `flex items-center p-4 mb-4 text-sm rounded-lg shadow-lg transition-all duration-300 transform translate-x-full opacity-0 ${
+          type === 'success'
+            ? 'text-green-800 bg-green-50 border border-green-200'
+            : type === 'error'
+            ? 'text-red-800 bg-red-50 border border-red-200'
+            : 'text-blue-800 bg-blue-50 border border-blue-200'
+        }`;
+
+        const icon =
+          type === 'success'
+            ? '<svg class="flex-shrink-0 w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>'
+            : type === 'error'
+            ? '<svg class="flex-shrink-0 w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>'
+            : '<svg class="flex-shrink-0 w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>';
+
+        toast.innerHTML = `
+          ${icon}
+          <span class="font-medium">${message}</span>
+          <button type="button"
+            class="ml-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 inline-flex h-8 w-8 hover:bg-gray-100"
+            onclick="this.parentElement.remove()"
+          >
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        `;
+
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.remove('translate-x-full', 'opacity-0');
+          toast.classList.add('translate-x-0', 'opacity-100');
+        }, 100);
+
+        setTimeout(() => {
+          toast.classList.add('translate-x-full', 'opacity-0');
+          setTimeout(() => toast.remove(), 300);
+        }, 5000);
+      }
+
+      {% if messages %}
+        {% for message in messages %}
+          showToast("{{ message }}", "{{ message.tags }}");
+        {% endfor %}
+      {% endif %}
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('password_changed') === 'true') {
+        showToast('Senha alterada com sucesso!', 'success');
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    });
+  </script>
+{% endblock %}

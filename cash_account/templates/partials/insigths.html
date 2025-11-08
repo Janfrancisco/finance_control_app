@@ -1,0 +1,169 @@
+<div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-200/60">
+  <div class="p-6 border-b border-slate-200/60">
+    <h3 class="text-xl font-bold text-slate-900">Análise Financeira</h3>
+    <p class="text-sm text-slate-600 mt-1">
+      Insights baseados nas suas movimentações
+    </p>
+  </div>
+
+  <div class="p-6">
+    <div class="space-y-6">
+      <div>
+        <div class="flex justify-between items-center mb-2">
+          <div class="flex items-center space-x-2">
+            <span class="text-sm font-medium text-gray-900">Taxa de Economia</span>
+            <div class="group relative">
+              <i data-lucide="info"
+                 class="h-4 w-4 text-gray-400 hover:text-blue-600 cursor-help transition-all duration-200 hover:scale-110"></i>
+              <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 
+                          bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible 
+                          group-hover:opacity-100 group-hover:visible transition-all duration-300 
+                          w-72 max-w-[90vw] text-left leading-relaxed z-50">
+                Percentual das suas receitas que você conseguiu economizar.
+                Calculado como: (Receitas - Despesas) ÷ Receitas × 100.
+                Uma taxa alta indica excelente controle financeiro.
+                <div class="absolute top-full left-1/2 transform -translate-x-1/2 
+                            border-4 border-transparent border-t-gray-800"></div>
+              </div>
+            </div>
+          </div>
+          <span class="text-sm text-emerald-600 font-bold">{{ saving_rate }}%</span>
+        </div>
+
+        <div class="w-full bg-gray-200 rounded-full h-3">
+          <div class="bg-gradient-to-r from-emerald-500 to-teal-600 h-3 rounded-full 
+                      shadow-lg shadow-emerald-500/30"
+               style="width: {{ saving_rate }}%"></div>
+        </div>
+
+        <div class="flex justify-between mt-2">
+          <span class="text-xs text-gray-500">Economizado: R$ {{ money_saved|floatformat:2 }}</span>
+          <span class="text-xs text-gray-500">de R$ {{ total_income|floatformat:2 }}</span>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between items-center mb-2">
+          <div class="flex items-center space-x-2">
+            <span class="text-sm font-medium text-gray-900">Equilíbrio PIX vs Dinheiro</span>
+            <div class="group relative">
+              <i data-lucide="info"
+                 class="h-4 w-4 text-gray-400 hover:text-blue-600 cursor-help transition-all duration-200 hover:scale-110"></i>
+              <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 
+                          bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible 
+                          group-hover:opacity-100 group-hover:visible transition-all duration-300 
+                          w-72 max-w-[90vw] text-left leading-relaxed z-50">
+                Distribuição do uso entre PIX e Dinheiro baseada no valor total movimentado.
+                Mostra qual método você prefere usar e o quão equilibrado está o uso entre eles.
+                <div class="absolute top-full left-1/2 transform -translate-x-1/2 
+                            border-4 border-transparent border-t-gray-800"></div>
+              </div>
+            </div>
+          </div>
+
+          {% if most_used_method == 'Dinheiro' %}
+            <span class="text-sm text-blue-600 font-bold">
+              {{ percent_cash }}% / {{ percent_pix }}%
+            </span>
+          {% else %}
+            <span class="text-sm text-blue-600 font-bold">
+              {{ percent_pix }}% / {{ percent_cash }}%
+            </span>
+          {% endif %}
+        </div>
+
+        <div class="w-full bg-gray-200 rounded-full h-3">
+          <div class="bg-gradient-to-r from-blue-500 to-blue-700 h-3 rounded-full shadow-lg shadow-blue-500/30"
+               style="width: 
+                 {% if most_used_method == 'Dinheiro' %}
+                   {{ percent_cash }}%
+                 {% else %}
+                   {{ percent_pix }}%
+                 {% endif %}">
+          </div>
+        </div>
+
+        <div class="flex justify-between mt-2">
+          <span class="text-xs text-gray-500">{{ most_used_method }} mais usado</span>
+          <span class="text-xs text-gray-500">Diferença: R$ {{ difference|floatformat:2 }}</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex justify-between items-center mb-2">
+          <div class="flex items-center space-x-2">
+            <span class="text-sm font-medium text-gray-900">Tendência do Mês</span>
+            <div class="group relative">
+              <i data-lucide="info"
+                 class="h-4 w-4 text-gray-400 hover:text-blue-600 cursor-help transition-all duration-200 hover:scale-110"></i>
+              <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 
+                          bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible 
+                          group-hover:opacity-100 group-hover:visible transition-all duration-300 
+                          w-72 max-w-[90vw] text-left leading-relaxed z-50">
+                Relação entre receitas e despesas. Calculado como: Receitas ÷ Despesas.
+                Valores acima de 1x indicam que você ganha mais do que gasta.
+                +{{ monthly_trend }}x significa receitas {{ monthly_trend }} vezes maiores que despesas.
+                <div class="absolute top-full left-1/2 transform -translate-x-1/2 
+                            border-4 border-transparent border-t-gray-800"></div>
+              </div>
+            </div>
+          </div>
+          <span class="text-sm text-green-600 font-bold">+{{ monthly_trend }}x</span>
+        </div>
+
+        <div class="w-full bg-gray-200 rounded-full h-3">
+          <div class="bg-gradient-to-r from-emerald-400 to-teal-500 h-3 rounded-full shadow-lg shadow-emerald-500/30"
+               style="width: 100%"></div>
+        </div>
+
+        <div class="flex justify-between mt-2">
+          <span class="text-xs text-gray-500">Entradas superam saídas</span>
+          <span class="text-xs text-gray-500">Saldo positivo</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+        <div class="text-center">
+          <div class="flex items-center justify-center space-x-1 mb-1">
+            <div class="text-lg font-bold text-blue-600">{{ transactions.count }}</div>
+            <div class="group relative">
+              <i data-lucide="info"
+                 class="h-3 w-3 text-gray-400 hover:text-blue-600 cursor-help transition-all duration-200 hover:scale-110"></i>
+              <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 
+                          bg-gray-800 text-white text-xs rounded-lg opacity-0 invisible 
+                          group-hover:opacity-100 group-hover:visible transition-all duration-300 
+                          w-64 max-w-[90vw] text-left leading-relaxed z-50">
+                Número total de transações registradas no período atual,
+                incluindo entradas e saídas.
+                <div class="absolute top-full left-1/2 transform -translate-x-1/2 
+                            border-4 border-transparent border-t-gray-800"></div>
+              </div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-500">Transações</div>
+        </div>
+
+        <div class="text-center">
+          <div class="flex items-center justify-center space-x-1 mb-1">
+            <div class="text-lg font-bold text-emerald-600">
+              {{ average_transactions|floatformat:2 }}
+            </div>
+            <div class="group relative">
+              <i data-lucide="info"
+                 class="h-3 w-3 text-gray-400 hover:text-blue-600 cursor-help transition-all duration-200 hover:scale-110"></i>
+              <div class="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-xs 
+                          rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible 
+                          transition-all duration-300 w-64 max-w-[90vw] text-left leading-relaxed z-50">
+                Valor médio por transação.
+                Calculado como: Soma dos valores absolutos ÷ Número de movimentações.
+                Indica o volume típico das suas movimentações.
+                <div class="absolute top-full left-1/2 transform -translate-x-1/2 
+                            border-4 border-transparent border-t-gray-800"></div>
+              </div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-500">Média por transação</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

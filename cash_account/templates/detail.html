@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block header_title %}
+  Detalhes da Transação
+{% endblock %}
+{% block content %}
+  <div class="h-full bg-gray-50 flex items-center justify-center px-2 sm:px-4">
+    <div class="w-full max-w-md sm:max-w-md bg-white rounded-lg shadow border border-gray-200 p-3 sm:p-4">
+      <!-- Title -->
+      <h1 class="text-xl font-semibold text-center text-gray-800">
+        {% if transaction.type == 'income' %}
+          Valor creditado
+        {% else %}
+          Valor debitado
+        {% endif %}
+      </h1>
+
+      <!-- Value and icon -->
+      <div class="flex flex-col items-center my-6">
+        <div class="{% if transaction.type == 'income' %}
+            bg-green-100 text-green-600
+          {% else %}
+            bg-red-100 text-red-600
+          {% endif %} rounded-full p-4 mb-4">
+          {% if transaction.type == 'income' %}
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right h-4 w-4">
+              <path d="M7 7h10v10"></path>
+              <path d="M7 17 17 7"></path>
+            </svg>
+          {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-right h-4 w-4">
+              <path d="m7 7 10 10"></path>
+              <path d="M17 7v10H7"></path>
+            </svg>
+          {% endif %}
+        </div>
+        <p class="text-2xl font-bold text-gray-900">R$ {{ transaction.amount|floatformat:2 }}</p>
+      </div>
+
+      <!-- Details -->
+      <div class="pt-6">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Sobre a transação</h2>
+
+        <div class="space-y-1 text-sm text-gray-700">
+          <p>
+            <span class="text-gray-700">Método da transação:</span>
+            <span class="font-medium text-gray-900">{{ transaction.transaction_method.get_type_display }}</span>
+          </p>
+
+          <p>
+            <span class="text-gray-700">Data da transação:</span>
+            <span class="font-medium text-gray-900">{{ transaction.transaction_date|date:'l, d/m/Y'|title }}</span>
+          </p>
+
+          <p>
+            <span class="text-gray-700">Horário:</span>
+            <span class="font-medium text-gray-900">{{ transaction.transaction_date|date:'H\hi' }}</span>
+          </p>
+
+          <p>
+            <span class="text-gray-700">Descrição:</span>
+            <span class="font-medium text-cyan-600">{{ transaction.description }}</span>
+          </p>
+
+          <div class="break-words">
+            <span class="text-gray-700">Id da transação:</span><br />
+            <div class="flex items-center justify-between bg-gray-50 border rounded-lg p-2 mt-1 group">
+              <span id="id_transaction" class="font-mono text-xs text-gray-900 truncate mr-2">{{ transaction.id }}</span>
+
+              <button id="copyButton" onclick="copyTransactionId()" title="Copiar ID da transação" class="flex-shrink-0 p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 active:scale-95"><i data-lucide="copy" class="h-4 w-4"></i></button>
+            </div>
+
+            <div id="copyFeedback" class="hidden mt-1 text-xs text-green-600 font-medium">✓ ID copiado com sucesso!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back button -->
+      <div class="text-center pt-6">
+        <a href="{% url 'statements' %}" class="inline-block text-sm text-blue-600 font-medium hover:underline">← Voltar para transações</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+  <script src="{% static 'js/detail.js' %}"></script>
+{% endblock %}

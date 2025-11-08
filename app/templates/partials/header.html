@@ -1,0 +1,11 @@
+<!-- templates/partials/header.html -->
+<header class="bg-white border-b border-gray-200 shadow-sm">
+  <div class="flex items-center h-16 px-4">
+    <button onclick="toggleSidebar()" class="lg:hidden mr-4 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+      <i data-lucide="menu" id="menu-icon" class="h-5 w-5"></i>
+    </button>
+    <h1 class="text-xl font-bold text-gray-900">
+      {% block header_title %}Dashboard{% endblock %}
+    </h1>
+  </div>
+</header>

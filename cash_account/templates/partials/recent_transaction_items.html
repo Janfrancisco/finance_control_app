@@ -1,0 +1,29 @@
+<div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50/80 transition-all duration-200 cursor-pointer">
+  <div class="flex items-center space-x-4">
+    <div class="p-2.5 rounded-xl {% if transaction.type == 'income' %}
+       bg-emerald-100 text-emerald-600l
+      {% else %}
+        bg-rose-200 text-rose-600
+      {% endif %}">
+      {% if transaction.type == 'income' %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-right h-4 w-4">
+          <path d="M7 7h10v10"></path>
+          <path d="M7 17 17 7"></path>
+        </svg>
+      {% else %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-right h-4 w-4">
+          <path d="m7 7 10 10"></path>
+          <path d="M17 7v10H7"></path>
+        </svg>
+      {% endif %}
+    </div>
+    <div>
+      <p class="font-semibold text-slate-900">{{ transaction.get_type_display }}</p>
+      <p class="text-sm text-slate-500 break-words">{{ transaction.description }}</p>
+    </div>
+  </div>
+  <div class="text-right">
+    <p class="font-bold {% if transaction.type == 'income' %}text-emerald-600 {% else %}text-rose-600{% endif %}">{% if transaction.type == 'expense' %}-{% endif %} R$ {{ transaction.amount }}</p>
+    <p class="text-xs text-slate-500">{{ transaction.transaction_date|date:'d/m/Y' }}</p>
+  </div>
+</div>

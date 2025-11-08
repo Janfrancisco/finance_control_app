@@ -1,0 +1,38 @@
+<div class="border-t border-slate-200/60 p-5 bg-slate-50/50 pl-8">
+  <div class="flex items-center space-x-3 mb-4">
+    <div class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center">
+      {% if user.avatar %}
+        <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-white shadow-lg">
+          <img class="w-full h-full object-cover" src="{{ user.avatar.url }}" alt="Foto do perfil" />
+        </div>
+      {% else %}
+        <span class="text-white text-xs">{{ user.first_name|slice:':1' }}{{ user.last_name|slice:':1' }}</span>
+      {% endif %}
+    </div>
+    <div>
+      <p class="text-sm font-medium text-gray-900">{{ user.first_name }}</p>
+      <p class="text-xs text-gray-500">{{ user.email }}</p>
+    </div>
+  </div>
+
+  <div class="space-y-1">
+    <a href="{% url 'profile_settings' %}">
+      <button class="w-full flex items-center justify-start py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white/70 rounded-xl transition-all duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 h-4 w-4">
+          <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>Configurações
+      </button>
+    </a>
+    <form action="{% url 'logout' %}" method="post">
+      {% csrf_token %}
+      <button class="w-full flex items-center justify-start py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-white/70 rounded-xl transition-all duration-200">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 h-4 w-4">
+          <path d="m16 17 5-5-5-5"></path>
+          <path d="M21 12H9"></path>
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        </svg>Sair
+      </button>
+    </form>
+  </div>
+</div>
