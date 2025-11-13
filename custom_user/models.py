@@ -5,7 +5,6 @@ from django.db import models
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     avatar = models.ImageField("Avatar", upload_to="avatars", blank=True, null=True)
-    second_name = models.CharField("Segundo nome", max_length=50)
     full_name = models.CharField("Nome completo", max_length=200)
 
     USERNAME_FIELD = "email"
@@ -21,6 +20,5 @@ class CustomUser(AbstractUser):
         self.full_name = self.full_name.title()
         name_splited = self.full_name.split()
         self.first_name = name_splited[0]
-        self.second_name = name_splited[1]
-        self.last_name = name_splited[2]
+        self.last_name = name_splited[-1]
         super().save(*args, **kwargs)
